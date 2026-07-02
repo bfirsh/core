@@ -47,7 +47,11 @@ open/close garage door gets buttons.
 `garage`, `gate`, `door` — default to the buttons view and list the buttons
 toggle first. Keep the slider available exactly as today, one tap away.
 
-| Proposed default (tested live) | Full proposal (chips hidden too) |
+To keep the first PR as small and reviewable as possible, it contains only the
+two changes below. Hiding the default favorite-position chips is deferred to a
+follow-up PR (see "Follow-up").
+
+| Proposed default (tested live) | Follow-up direction (chips hidden too) |
 | --- | --- |
 | ![Patched default: buttons](images/5-patched-buttons-default.png) | ![Proposed final](images/6-proposed-final.png) |
 
@@ -83,13 +87,17 @@ In `render()`, emit the button-mode `ha-icon-button-toggle` before the
 position-mode one for discrete device classes, so the selected control is also
 the first in the group. (Mocked in the right-hand screenshot above.)
 
-### Change 3 — don't show *default* favorite-position chips for discrete classes
+### Follow-up (separate PR) — don't show *default* favorite-position chips for discrete classes
 
 `ha-more-info-cover-favorite-positions` falls back to a built-in default set
 (0/25/75/100%) when the user hasn't configured favorites. Suppress the
 *default* set for `garage`/`gate`/`door`; keep chips the user explicitly
 configured (someone who vents their garage 20% for the cat has opted into
 percentages deliberately).
+
+Deliberately **not** part of the initial PR: it touches a second component,
+and keeping the first PR to a single, easily-reviewed behavior change (default
+mode + toggle order) maximizes the chance of it landing quickly upstream.
 
 ## Design notes and alternatives considered
 
@@ -126,14 +134,14 @@ converges towards, while keeping position access one tap away):
 - Frontend package `home-assistant-frontend==20260624.3` served by this
   checkout of core; screenshots via Playwright/Chromium at 1280×900.
 - Change 1 was applied to the shipped bundle
-  (`hass_frontend/frontend_latest/49887.*.js`) and verified live; changes 2–3
-  are DOM mockups of the same dialog.
+  (`hass_frontend/frontend_latest/49887.*.js`) and verified live; change 2 and
+  the follow-up are DOM mockups of the same dialog.
 
 ## Where the real PR goes
 
-This needs a PR against `home-assistant/frontend`
-(`src/dialogs/more-info/controls/more-info-cover.ts` and
-`.../components/covers/ha-more-info-cover-favorite-positions.ts`), not core.
+This needs a PR against `home-assistant/frontend` — the initial PR touches
+only `src/dialogs/more-info/controls/more-info-cover.ts`; the follow-up also
+touches `.../components/covers/ha-more-info-cover-favorite-positions.ts`.
 This repository/branch only hosts the proposal so it can be reviewed; nothing
 under `docs/garage-door-ui-redesign/` or `local-test/` is intended to merge
 upstream.
