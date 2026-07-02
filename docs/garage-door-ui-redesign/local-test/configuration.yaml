@@ -1,0 +1,66 @@
+homeassistant:
+  name: Home
+  latitude: 37.5
+  longitude: -122.3
+  elevation: 10
+  unit_system: metric
+  time_zone: America/Los_Angeles
+  country: US
+
+frontend:
+api:
+
+input_number:
+  garage_position:
+    name: Garage position
+    min: 0
+    max: 100
+    step: 1
+    initial: 70
+
+template:
+  - cover:
+      - name: Garage Door
+        unique_id: garage_door_position
+        device_class: garage
+        position: "{{ states('input_number.garage_position') | int }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garage_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garage_position
+            data:
+              value: 0
+        stop_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garage_position
+            data:
+              value: "{{ states('input_number.garage_position') | int }}"
+        set_cover_position:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garage_position
+            data:
+              value: "{{ position }}"
+      - name: Garage Door Simple
+        unique_id: garage_door_simple
+        device_class: garage
+        state: "{{ states('input_number.garage_position') | int > 0 }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garage_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garage_position
+            data:
+              value: 0
